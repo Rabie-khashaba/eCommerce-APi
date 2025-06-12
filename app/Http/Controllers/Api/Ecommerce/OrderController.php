@@ -3,33 +3,33 @@
 namespace App\Http\Controllers\Api\Ecommerce;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\CartRequest;
-use App\Http\Resources\CartResource;
-use App\Models\CartItem;
+use App\Http\Requests\OrderRequest;
+use App\Http\Resources\OrderResource;
+use App\Models\Order;
 use App\Trait\TraitApi;
 use Illuminate\Http\Request;
 
-class CartItemController extends Controller
+class OrderController extends Controller
 {
     use TraitApi;
 
     public function index()
     {
         try {
-            $cart = CartResource::collection(CartItem::get());
-            return $this->apiResource($cart , 'OK', 200);
+            $order = OrderResource::collection(Order::get());
+            return $this->apiResource($order , 'OK', 200);
 
         }catch (\Exception $exception){
             return $exception->getMessage();
         }
     }
-    public function store(CartRequest $request)
+    public function store(OrderRequest $request)
     {
         try {
-            $cart = CartItem::create([
+            $cart = Order::create([
                 'user_id'=>$request->user_id,
-                'product_id'=>$request->product_id,
-                'quantity'=>$request->quantity,
+                'total_price'=>$request->total_price,
+//                'status'=>$request->status,
             ]);
 
             if(!$cart){
@@ -40,7 +40,7 @@ class CartItemController extends Controller
 
             return response()->json([
                 'success'=>true,
-                'message'=>'Cart Item created successfully',
+                'message'=>'Order created successfully',
                 'data'=>$cart
             ]);
         }catch (\Exception $exception){
@@ -51,19 +51,19 @@ class CartItemController extends Controller
 
     public function show($id){
 
-        $cart = new CartResource(CartItem::findOrFail($id));
-        return $this->apiResource($cart , 'OK', 200);
+        $order = new OrderResource(Order::findOrFail($id));
+        return $this->apiResource($order , 'OK', 200);
     }
 
     public function update(Request $request,$id)
     {
         try {
-            $cart = CartItem::where('id',$id)->first()
-            ->update(
-                $request->all()
-            );
+            $order = Order::where('id',$id)->first()
+                ->update(
+                    $request->all()
+                );
 
-            if (!$cart){
+            if (!$order){
                 return response()->json([
                     'success'=>false,
                 ]);
@@ -71,7 +71,7 @@ class CartItemController extends Controller
 
             return response()->json([
                 'success'=>true,
-                'message'=>'CartItem updated successfully',
+                'message'=>'Order updated successfully',
             ]);
 
         }catch (\Exception $exception){
@@ -82,12 +82,12 @@ class CartItemController extends Controller
 
 
     public function delete($id){
-        $cart = CartItem::findorfail($id);
+        $cart = Order::findorfail($id);
         $cart->delete();
 
         return response()->json([
             'success'=>true,
-            'message'=>'Cart Item deleted successfully',
+            'message'=>'Order deleted successfully',
         ]);
     }
 }

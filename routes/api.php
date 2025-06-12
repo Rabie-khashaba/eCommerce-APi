@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\Ecommerce\ProductController;
 use App\Http\Controllers\Api\Ecommerce\CartItemController;
+use App\Http\Controllers\Api\Ecommerce\OrderController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 
@@ -31,5 +32,16 @@ Route::middleware('auth:sanctum')->group(function (){
     Route::get('cartItem/{id}' , [CartItemController::class , 'show']);
     Route::post('updateCartItem/{id}' , [CartItemController::class , 'update']);
     Route::get('deleteCartItem/{id}' , [CartItemController::class , 'delete']);
+
+});
+
+
+//Order
+Route::middleware('auth:sanctum')->group(function (){
+    Route::get('orders' , [OrderController::class , 'index']);
+    Route::post('storeOrder' , [OrderController::class , 'store']);
+    Route::get('order/{id}' , [OrderController::class , 'show']);
+    Route::post('updateOrder/{id}' , [OrderController::class , 'update']);
+    Route::get('deleteOrder/{id}' , [OrderController::class , 'delete']);
 
 });
