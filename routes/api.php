@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\Ecommerce\CartItemController;
 use App\Http\Controllers\Api\Ecommerce\OrderController;
 use App\Http\Controllers\Api\Ecommerce\CategoryController;
 use App\Http\Controllers\Api\Ecommerce\PaymentController;
+use App\Http\Controllers\Api\Ecommerce\ProductImageController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 
@@ -58,10 +59,23 @@ Route::middleware('auth:sanctum')->group(function (){
     Route::get('deleteOrder/{id}' , [OrderController::class , 'delete']);
 });
 
-//Order
+
+//payment
 Route::middleware('auth:sanctum')->group(function (){
     Route::get('payments' , [PaymentController::class , 'index']);
     Route::post('payStorePayment' , [PaymentController::class , 'pay']);
     Route::get('payment/{id}' , [PaymentController::class , 'show']);
     Route::get('deletePayment/{id}' , [PaymentController::class , 'delete']);
 });
+
+
+
+//Product Imagee
+Route::middleware('auth:sanctum')->group(function (){
+
+    Route::post('storeImage' , [ProductImageController::class , 'store']);
+    Route::get('image/{id}' , [ProductImageController::class , 'show']);
+    Route::get('deleteImage/{id}' , [ProductImageController::class , 'delete']);
+});
+
+
