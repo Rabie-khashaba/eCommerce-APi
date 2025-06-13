@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\Ecommerce\OrderController;
 use App\Http\Controllers\Api\Ecommerce\CategoryController;
 use App\Http\Controllers\Api\Ecommerce\PaymentController;
 use App\Http\Controllers\Api\Ecommerce\ProductImageController;
+use App\Http\Controllers\Api\Ecommerce\ReviewController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 
@@ -76,6 +77,14 @@ Route::middleware('auth:sanctum')->group(function (){
     Route::post('storeImage' , [ProductImageController::class , 'store']);
     Route::get('image/{id}' , [ProductImageController::class , 'show']);
     Route::get('deleteImage/{id}' , [ProductImageController::class , 'delete']);
+});
+
+
+Route::middleware('auth:sanctum')->group(function (){
+
+    Route::get('reviews' , [ReviewController::class , 'index']);
+    Route::post('StoreRating' , [ReviewController::class , 'store']);
+
 });
 
 
