@@ -3,6 +3,8 @@
 use App\Http\Controllers\Api\Ecommerce\ProductController;
 use App\Http\Controllers\Api\Ecommerce\CartItemController;
 use App\Http\Controllers\Api\Ecommerce\OrderController;
+use App\Http\Controllers\Api\Ecommerce\CategoryController;
+use App\Http\Controllers\Api\Ecommerce\PaymentController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 
@@ -10,6 +12,17 @@ use App\Http\Controllers\Api\AuthController;
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
 
+
+//category
+Route::middleware('auth:sanctum')->group(function (){
+
+    Route::get('category' , [CategoryController::class , 'index']);
+    Route::post('storeCategory' , [CategoryController::class , 'store']);
+    Route::get('category/{id}' , [CategoryController::class , 'show']);
+    Route::post('updateCategory/{id}' , [CategoryController::class , 'update']);
+    Route::get('deleteCategory/{id}' , [CategoryController::class , 'delete']);
+
+});
 
 
 //product
@@ -43,5 +56,12 @@ Route::middleware('auth:sanctum')->group(function (){
     Route::get('order/{id}' , [OrderController::class , 'show']);
     Route::post('updateOrder/{id}' , [OrderController::class , 'update']);
     Route::get('deleteOrder/{id}' , [OrderController::class , 'delete']);
+});
 
+//Order
+Route::middleware('auth:sanctum')->group(function (){
+    Route::get('payments' , [PaymentController::class , 'index']);
+    Route::post('payStorePayment' , [PaymentController::class , 'pay']);
+    Route::get('payment/{id}' , [PaymentController::class , 'show']);
+    Route::get('deletePayment/{id}' , [PaymentController::class , 'delete']);
 });

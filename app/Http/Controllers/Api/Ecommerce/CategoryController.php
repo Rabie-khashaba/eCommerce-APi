@@ -3,36 +3,37 @@
 namespace App\Http\Controllers\Api\Ecommerce;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ProductRequest;
-use App\Http\Resources\ProductResource;
-use App\Models\Product;
-use App\Models\User;
+use App\Http\Requests\CartRequest;
+use App\Http\Requests\CategoryRequest;
+use App\Http\Resources\CartResource;
+use App\Http\Resources\CategoryResource;
+use App\Models\Category;
 use App\Trait\TraitApi;
 use Illuminate\Http\Request;
 
-class ProductController extends Controller
+class CategoryController extends Controller
 {
-
     use TraitApi;
-
 
     public function index()
     {
-        $products = ProductResource::collection(Product::get());
-        return $this->apiResource($products , 'OK', 200);
+        try {
+            $order = CategoryResource::collection(Category::get());
+            return $this->apiResource($order , 'OK', 200);
+
+        }catch (\Exception $exception){
+            return $exception->getMessage();
+        }
     }
-    public function store(ProductRequest $request)
+    public function store(CategoryRequest $request)
     {
         try {
-            $product = Product::create([
-                'category_id' => $request->category_id,
+            $cart = Category::create([
                 'name'=>$request->name,
                 'description'=>$request->description,
-                'price'=>$request->price,
-                'stock'=>$request->stock,
             ]);
 
-            if(!$product){
+            if(!$cart){
                 return response()->json([
                     'success'=>false,
                 ]);
@@ -40,8 +41,8 @@ class ProductController extends Controller
 
             return response()->json([
                 'success'=>true,
-                'message'=>'Product created successfully',
-                'data'=>$product
+                'message'=>'Category created successfully',
+                'data'=>$cart
             ]);
         }catch (\Exception $exception){
             return $exception->getMessage();
@@ -51,19 +52,19 @@ class ProductController extends Controller
 
     public function show($id){
 
-        $product = new ProductResource(Product::findOrFail($id));
-        return $this->apiResource($product , 'OK', 200);
+        $order = new CategoryResource(Category::findOrFail($id));
+        return $this->apiResource($order , 'OK', 200);
     }
 
     public function update(Request $request,$id)
     {
         try {
-            $product = Product::where('id',$id);
-            $product->update(
-                $request->all()
-            );
+            $order = Category::where('id',$id)->first()
+                ->update(
+                    $request->all()
+                );
 
-            if (!$product){
+            if (!$order){
                 return response()->json([
                     'success'=>false,
                 ]);
@@ -71,7 +72,7 @@ class ProductController extends Controller
 
             return response()->json([
                 'success'=>true,
-                'message'=>'Product updated successfully',
+                'message'=>'Category updated successfully',
             ]);
 
         }catch (\Exception $exception){
@@ -82,13 +83,12 @@ class ProductController extends Controller
 
 
     public function delete($id){
-        $product = Product::findorfail($id);
-        $product->delete();
+        $cart = Category::findorfail($id);
+        $cart->delete();
 
         return response()->json([
             'success'=>true,
-            'message'=>'Product deleted successfully',
+            'message'=>'Category deleted successfully',
         ]);
     }
-
 }

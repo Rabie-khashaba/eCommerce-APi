@@ -5,9 +5,12 @@ namespace App\Http\Controllers\Api\Ecommerce;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\OrderRequest;
 use App\Http\Resources\OrderResource;
+use App\Models\CartItem;
 use App\Models\Order;
+use App\Models\OrderItem;
 use App\Trait\TraitApi;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
@@ -25,25 +28,50 @@ class OrderController extends Controller
     }
     public function store(OrderRequest $request)
     {
+
         try {
-            $cart = Order::create([
-                'user_id'=>$request->user_id,
-                'total_price'=>$request->total_price,
-//                'status'=>$request->status,
+            DB::beginTransaction();
+
+            $items = CartItem::with('product')->where('user_id',auth()->user()->id)->get();
+            $total_price = $items->sum(fn($item) => $item->product->price * $item->quantity);
+
+//            return response()->json([
+//                'data'=>$items
+//            ]);
+
+
+            $order = Order::create([
+                'user_id'=>auth()->user()->id,
+                'total_price'=>$total_price,
+                'status'=>'Pending',
             ]);
 
-            if(!$cart){
-                return response()->json([
-                    'success'=>false,
+            foreach ($items as $item){
+                OrderItem::create([
+                    'order_id'=>$order->id,
+                    'product_id'=>$item->product->id,
+                    'quantity'=>$item->quantity,
+                    'unit_price'=>$item->product->price,
+                    'total_price'=>$total_price,
                 ]);
             }
 
+            CartItem::where('user_id',auth()->user()->id)->delete();
+
+
+
+            DB::commit();
             return response()->json([
                 'success'=>true,
                 'message'=>'Order created successfully',
-                'data'=>$cart
+                'data'=>$order
             ]);
+
+
+
+
         }catch (\Exception $exception){
+            DB::rollBack();
             return $exception->getMessage();
         }
 
